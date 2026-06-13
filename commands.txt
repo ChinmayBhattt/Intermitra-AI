@@ -1,0 +1,3 @@
+CMD/Control + SHIFT + .
+
+Commit - Changes = Save
