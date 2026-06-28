@@ -2,6 +2,7 @@
 
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
+import { Search, Bell, LogOut } from 'lucide-react';
 
 interface HeaderProps {
   title: string;
@@ -33,7 +34,9 @@ export default function Header({ title, subtitle }: HeaderProps) {
 
       <div className="header-right">
         <div className="header-search">
-          <span className="header-search-icon">🔍</span>
+          <span className="header-search-icon">
+            <Search size={18} strokeWidth={2} />
+          </span>
           <input
             type="text"
             placeholder="Search members, plans..."
@@ -42,7 +45,7 @@ export default function Header({ title, subtitle }: HeaderProps) {
         </div>
 
         <button className="header-icon-btn" title="Notifications" aria-label="Notifications">
-          🔔
+          <Bell size={18} strokeWidth={2} />
           <span className="header-notification-dot" />
         </button>
 
@@ -52,7 +55,7 @@ export default function Header({ title, subtitle }: HeaderProps) {
           title="Sign Out"
           aria-label="Sign Out"
         >
-          🚪
+          <LogOut size={18} strokeWidth={2} />
         </button>
       </div>
     </header>

@@ -5,10 +5,23 @@ import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 
+import {
+  LayoutDashboard,
+  Bot,
+  Users,
+  Gem,
+  CreditCard,
+  CalendarCheck,
+  QrCode,
+  Shield,
+  History,
+  Settings as SettingsIcon
+} from 'lucide-react';
+
 interface NavItem {
   label: string;
   href: string;
-  icon: string;
+  icon: React.ComponentType<any>;
   badge?: number;
 }
 
@@ -21,26 +34,26 @@ const navigation: NavSection[] = [
   {
     title: 'Overview',
     items: [
-      { label: 'Dashboard', href: '/', icon: '📊' },
-      { label: 'AI Insights', href: '/ai-insights', icon: '🤖' },
+      { label: 'Dashboard', href: '/', icon: LayoutDashboard },
+      { label: 'AI Insights', href: '/ai-insights', icon: Bot },
     ],
   },
   {
     title: 'Management',
     items: [
-      { label: 'Members', href: '/members', icon: '👥' },
-      { label: 'Plans', href: '/plans', icon: '💎' },
-      { label: 'Payments', href: '/payments', icon: '💳' },
-      { label: 'Attendance', href: '/attendance', icon: '📋' },
+      { label: 'Members', href: '/members', icon: Users },
+      { label: 'Plans', href: '/plans', icon: Gem },
+      { label: 'Payments', href: '/payments', icon: CreditCard },
+      { label: 'Attendance', href: '/attendance', icon: CalendarCheck },
     ],
   },
   {
     title: 'Operations',
     items: [
-      { label: 'Check-In Scanner', href: '/attendance/scanner', icon: '📱' },
-      { label: 'Staff', href: '/staff', icon: '🛡️' },
-      { label: 'Activity Log', href: '/activity-log', icon: '📝' },
-      { label: 'Settings', href: '/settings', icon: '⚙️' },
+      { label: 'Check-In Scanner', href: '/attendance/scanner', icon: QrCode },
+      { label: 'Staff', href: '/staff', icon: Shield },
+      { label: 'Activity Log', href: '/activity-log', icon: History },
+      { label: 'Settings', href: '/settings', icon: SettingsIcon },
     ],
   },
 ];
@@ -88,19 +101,24 @@ export default function Sidebar({ user, overdueCount }: SidebarProps) {
         {navWithBadges.map((section) => (
           <div key={section.title}>
             <div className="sidebar-section-label">{section.title}</div>
-            {section.items.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={cn('sidebar-link', isActive(item.href) && 'active')}
-              >
-                <span className="sidebar-icon">{item.icon}</span>
-                <span>{item.label}</span>
-                {item.badge !== undefined && item.badge > 0 && (
-                  <span className="sidebar-badge">{item.badge}</span>
-                )}
-              </Link>
-            ))}
+            {section.items.map((item) => {
+              const IconComponent = item.icon;
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cn('sidebar-link', isActive(item.href) && 'active')}
+                >
+                  <span className="sidebar-icon">
+                    <IconComponent size={18} strokeWidth={2} />
+                  </span>
+                  <span>{item.label}</span>
+                  {item.badge !== undefined && item.badge > 0 && (
+                    <span className="sidebar-badge">{item.badge}</span>
+                  )}
+                </Link>
+              );
+            })}
           </div>
         ))}
       </nav>
