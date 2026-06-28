@@ -9,6 +9,7 @@ import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell,
 } from 'recharts';
+import { Users, UserPlus, DollarSign, CalendarCheck, TrendingDown, AlertTriangle, Bot } from 'lucide-react';
 
 // Demo data for charts when DB is empty
 const demoGrowthData = [
@@ -187,7 +188,9 @@ export default function DashboardPage() {
           <div className="stat-card animate-in">
             <div className="stat-card-header">
               <span className="stat-card-label">Active Members</span>
-              <span className="stat-card-icon">👥</span>
+              <span className="stat-card-icon" style={{ color: 'var(--brand-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Users size={18} strokeWidth={2} />
+              </span>
             </div>
             <div className="stat-card-value">{stats.totalActive}</div>
             <span className="stat-card-change positive">↑ 12% vs last month</span>
@@ -196,7 +199,9 @@ export default function DashboardPage() {
           <div className="stat-card animate-in">
             <div className="stat-card-header">
               <span className="stat-card-label">New This Month</span>
-              <span className="stat-card-icon">🆕</span>
+              <span className="stat-card-icon" style={{ color: 'var(--status-active)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <UserPlus size={18} strokeWidth={2} />
+              </span>
             </div>
             <div className="stat-card-value">{stats.newThisMonth}</div>
             <span className="stat-card-change positive">↑ 8% vs last month</span>
@@ -205,7 +210,9 @@ export default function DashboardPage() {
           <div className="stat-card animate-in">
             <div className="stat-card-header">
               <span className="stat-card-label">Monthly Revenue</span>
-              <span className="stat-card-icon">💰</span>
+              <span className="stat-card-icon" style={{ color: 'var(--status-active)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <DollarSign size={18} strokeWidth={2} />
+              </span>
             </div>
             <div className="stat-card-value">{formatCurrency(stats.monthlyRevenue)}</div>
             <span className="stat-card-change positive">↑ 15% growth</span>
@@ -214,7 +221,9 @@ export default function DashboardPage() {
           <div className="stat-card animate-in">
             <div className="stat-card-header">
               <span className="stat-card-label">Today&apos;s Check-ins</span>
-              <span className="stat-card-icon">📋</span>
+              <span className="stat-card-icon" style={{ color: 'var(--brand-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <CalendarCheck size={18} strokeWidth={2} />
+              </span>
             </div>
             <div className="stat-card-value">{stats.attendanceToday}</div>
             <span className="stat-card-change positive">Peak at 5-7 PM</span>
@@ -223,7 +232,9 @@ export default function DashboardPage() {
           <div className="stat-card animate-in">
             <div className="stat-card-header">
               <span className="stat-card-label">Churn Rate</span>
-              <span className="stat-card-icon">📉</span>
+              <span className="stat-card-icon" style={{ color: 'var(--status-expired)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <TrendingDown size={18} strokeWidth={2} />
+              </span>
             </div>
             <div className="stat-card-value">{stats.churnRate}%</div>
             <span className="stat-card-change negative">↑ 0.5% vs last month</span>
@@ -232,7 +243,9 @@ export default function DashboardPage() {
           <div className="stat-card animate-in">
             <div className="stat-card-header">
               <span className="stat-card-label">Overdue Payments</span>
-              <span className="stat-card-icon">⚠️</span>
+              <span className="stat-card-icon" style={{ color: 'var(--status-expired)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <AlertTriangle size={18} strokeWidth={2} />
+              </span>
             </div>
             <div className="stat-card-value">{stats.overduePayments}</div>
             <span className="stat-card-change negative">Needs attention</span>
@@ -420,7 +433,9 @@ export default function DashboardPage() {
         {/* AI Insights Teaser */}
         <div className="ai-card animate-in">
           <div className="ai-card-header">
-            <span className="ai-card-icon">🤖</span>
+            <span className="ai-card-icon" style={{ color: 'var(--brand-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Bot size={20} strokeWidth={2} />
+            </span>
             <h3 className="ai-card-title">AI Insights</h3>
             <span className="ai-tag" style={{ marginLeft: 'auto' }}>✨ Powered by Claude</span>
           </div>

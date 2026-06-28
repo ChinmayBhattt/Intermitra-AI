@@ -7,6 +7,7 @@ import StatusBadge from '@/components/StatusBadge';
 import { getInitials, getFullName, formatDate, debounce } from '@/lib/utils';
 import Link from 'next/link';
 import type { Member, MemberStatus } from '@/lib/types';
+import { Search, Users } from 'lucide-react';
 
 const demoMembers: Member[] = [
   { id: '1', first_name: 'Sarah', last_name: 'Johnson', email: 'sarah@email.com', phone: '555-0101', status: 'active', join_date: '2025-01-15', created_at: '', updated_at: '', archived: false },
@@ -93,7 +94,9 @@ export default function MembersPage() {
         {/* Filters */}
         <div className="filters-bar">
           <div className="filter-search">
-            <span className="filter-search-icon">🔍</span>
+            <span className="filter-search-icon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Search size={16} strokeWidth={2} />
+            </span>
             <input
               type="text"
               placeholder="Search by name or email..."
@@ -167,7 +170,9 @@ export default function MembersPage() {
                   <tr>
                     <td colSpan={5}>
                       <div className="empty-state">
-                        <div className="empty-state-icon">👥</div>
+                        <div className="empty-state-icon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}>
+                          <Users size={32} strokeWidth={1.5} />
+                        </div>
                         <div className="empty-state-title">No members found</div>
                         <div className="empty-state-text">
                           {search ? 'Try a different search term' : 'Add your first member to get started'}

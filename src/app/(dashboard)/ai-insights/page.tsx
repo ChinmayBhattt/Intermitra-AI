@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Header from '@/components/Header';
 import StatusBadge from '@/components/StatusBadge';
 import { getInitials } from '@/lib/utils';
+import { AlertTriangle, Mail, BarChart2, Target, Bot } from 'lucide-react';
 
 const demoAtRiskMembers = [
   { id: '1', name: 'Lisa Park', email: 'lisa@email.com', status: 'expired', attendance_drop: 75, last_visit: '12 days ago', risk_reason: 'No visits in 12 days, previously visited 4x/week' },
@@ -71,11 +72,11 @@ export default function AIInsightsPage() {
     setTimeout(() => setGenerating(false), 2000); // Simulate API call
   };
 
-  const tabs: { id: AITab; label: string; icon: string }[] = [
-    { id: 'at-risk', label: 'At-Risk Members', icon: '⚠️' },
-    { id: 'emails', label: 'Retention Emails', icon: '✉️' },
-    { id: 'report', label: 'Engagement Report', icon: '📊' },
-    { id: 'promotions', label: 'Promotions', icon: '🎯' },
+  const tabs: { id: AITab; label: string; icon: React.ComponentType<any> }[] = [
+    { id: 'at-risk', label: 'At-Risk Members', icon: AlertTriangle },
+    { id: 'emails', label: 'Retention Emails', icon: Mail },
+    { id: 'report', label: 'Engagement Report', icon: BarChart2 },
+    { id: 'promotions', label: 'Promotions', icon: Target },
   ];
 
   return (
@@ -93,15 +94,20 @@ export default function AIInsightsPage() {
 
         {/* Tabs */}
         <div className="tabs">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              className={`tab ${activeTab === tab.id ? 'active' : ''}`}
-              onClick={() => setActiveTab(tab.id)}
-            >
-              {tab.icon} {tab.label}
-            </button>
-          ))}
+          {tabs.map((tab) => {
+            const IconComponent = tab.icon;
+            return (
+              <button
+                key={tab.id}
+                className={`tab ${activeTab === tab.id ? 'active' : ''}`}
+                onClick={() => setActiveTab(tab.id)}
+                style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
+              >
+                <IconComponent size={16} />
+                <span>{tab.label}</span>
+              </button>
+            );
+          })}
         </div>
 
         {/* At-Risk Members */}
@@ -109,7 +115,9 @@ export default function AIInsightsPage() {
           <div>
             <div className="ai-card" style={{ marginBottom: 'var(--space-6)' }}>
               <div className="ai-card-header">
-                <span className="ai-card-icon">🤖</span>
+                <span className="ai-card-icon" style={{ color: 'var(--brand-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Bot size={20} strokeWidth={2} />
+                </span>
                 <h3 className="ai-card-title">At-Risk Member Detection</h3>
                 <button className="btn btn-secondary btn-sm" style={{ marginLeft: 'auto' }} onClick={() => handleGenerate('at-risk')}>
                   {generating ? <span className="spinner" /> : '🔄 Refresh Analysis'}
