@@ -1,13 +1,16 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { createClient } from '@/lib/supabase/client';
-import Header from '@/components/Header';
-import StatusBadge from '@/components/StatusBadge';
-import { getInitials, getFullName, formatDate, debounce } from '@/lib/utils';
 import Link from 'next/link';
+import { createClient } from '@/lib/supabase/client';
+import MobileHeader from '@/components/mobile/MobileHeader';
+import MonthPills from '@/components/mobile/MonthPills';
+import StatusBadge from '@/components/StatusBadge';
+import { getInitials, getFullName, formatDate } from '@/lib/utils';
 import type { Member, MemberStatus } from '@/lib/types';
-import { Search, Users } from 'lucide-react';
+import { TrendingUp, TrendingDown } from 'lucide-react';
+
+const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 const demoMembers: Member[] = [
   { id: '1', first_name: 'Sarah', last_name: 'Johnson', email: 'sarah@email.com', phone: '555-0101', status: 'active', join_date: '2025-01-15', created_at: '', updated_at: '', archived: false },
@@ -15,178 +18,109 @@ const demoMembers: Member[] = [
   { id: '3', first_name: 'Emily', last_name: 'Davis', email: 'emily@email.com', phone: '555-0103', status: 'paused', join_date: '2024-11-05', created_at: '', updated_at: '', archived: false },
   { id: '4', first_name: 'James', last_name: 'Wilson', email: 'james@email.com', phone: '555-0104', status: 'active', join_date: '2025-03-10', created_at: '', updated_at: '', archived: false },
   { id: '5', first_name: 'Lisa', last_name: 'Park', email: 'lisa@email.com', phone: '555-0105', status: 'expired', join_date: '2024-06-22', created_at: '', updated_at: '', archived: false },
-  { id: '6', first_name: 'David', last_name: 'Brown', email: 'david@email.com', phone: '555-0106', status: 'cancelled', join_date: '2024-09-01', created_at: '', updated_at: '', archived: false },
-  { id: '7', first_name: 'Ana', last_name: 'Martinez', email: 'ana@email.com', phone: '555-0107', status: 'active', join_date: '2025-05-18', created_at: '', updated_at: '', archived: false },
-  { id: '8', first_name: 'Ryan', last_name: 'Taylor', email: 'ryan@email.com', phone: '555-0108', status: 'active', join_date: '2025-04-02', created_at: '', updated_at: '', archived: false },
 ];
+
+const sparkHeights = [35, 55, 48, 72, 60, 85, 68];
 
 export default function MembersPage() {
   const [members, setMembers] = useState<Member[]>(demoMembers);
-  const [search, setSearch] = useState('');
+  const [activeMonth, setActiveMonth] = useState(months[new Date().getMonth()]);
   const [statusFilter, setStatusFilter] = useState<MemberStatus | 'all'>('all');
-  const [loading, setLoading] = useState(true);
   const supabase = createClient();
 
   useEffect(() => {
     const fetchMembers = async () => {
       try {
-        let query = supabase
-          .from('members')
-          .select('*')
-          .eq('archived', false)
-          .order('created_at', { ascending: false });
-
-        if (statusFilter !== 'all') {
-          query = query.eq('status', statusFilter);
-        }
-
-        if (search) {
-          query = query.or(`first_name.ilike.%${search}%,last_name.ilike.%${search}%,email.ilike.%${search}%`);
-        }
-
+        let query = supabase.from('members').select('*').eq('archived', false).order('created_at', { ascending: false });
+        if (statusFilter !== 'all') query = query.eq('status', statusFilter);
         const { data } = await query;
-        if (data && data.length > 0) {
-          setMembers(data);
-        }
+        if (data?.length) setMembers(data);
       } catch {
-        // Use demo data
-      } finally {
-        setLoading(false);
+        /* demo */
       }
     };
-
     fetchMembers();
-  }, [search, statusFilter, supabase]);
+  }, [statusFilter, supabase]);
 
-  const handleSearch = debounce((value: string) => {
-    setSearch(value);
-  }, 300);
+  const activeCount = members.filter((m) => m.status === 'active').length;
+  const expiredCount = members.filter((m) => m.status === 'expired' || m.status === 'cancelled').length;
 
-  const filteredMembers = members.filter(m => {
-    if (statusFilter !== 'all' && m.status !== statusFilter) return false;
-    if (search) {
-      const term = search.toLowerCase();
-      return (
-        m.first_name.toLowerCase().includes(term) ||
-        m.last_name.toLowerCase().includes(term) ||
-        m.email.toLowerCase().includes(term)
-      );
-    }
-    return true;
-  });
+  const filtered = statusFilter === 'all' ? members : members.filter((m) => m.status === statusFilter);
 
   return (
-    <>
-      <Header title="Members" subtitle="Manage gym members" />
-      <div className="page-content">
-        <div className="page-header">
-          <div className="page-header-left">
-            <h2 className="page-title">Members</h2>
-            <p className="page-subtitle">{filteredMembers.length} members found</p>
-          </div>
-          <div className="page-header-actions">
-            <Link href="/members/new" className="btn btn-primary">
-              + Add Member
-            </Link>
+    <div className="mobile-page">
+      <MobileHeader title="Members" showBack />
+
+      <MonthPills months={months} active={activeMonth} onChange={setActiveMonth} />
+
+      <div className="summary-split">
+        <div className="summary-box glass-panel">
+          <div className="summary-box__label">Active</div>
+          <div className="summary-box__value">{activeCount}</div>
+          <span className="summary-box__change summary-box__change--up">
+            <TrendingUp size={12} /> +8%
+          </span>
+          <div className="mini-sparkline">
+            {sparkHeights.map((h, i) => (
+              <span key={i} style={{ height: `${h}%` }} />
+            ))}
           </div>
         </div>
-
-        {/* Filters */}
-        <div className="filters-bar">
-          <div className="filter-search">
-            <span className="filter-search-icon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Search size={16} strokeWidth={2} />
-            </span>
-            <input
-              type="text"
-              placeholder="Search by name or email..."
-              onChange={(e) => handleSearch(e.target.value)}
-            />
-          </div>
-          <select
-            className="filter-select"
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value as MemberStatus | 'all')}
-          >
-            <option value="all">All Status</option>
-            <option value="active">Active</option>
-            <option value="expired">Expired</option>
-            <option value="paused">Paused</option>
-            <option value="cancelled">Cancelled</option>
-          </select>
-        </div>
-
-        {/* Members Table */}
-        <div className="card">
-          <div className="data-table-wrapper">
-            <table className="data-table">
-              <thead>
-                <tr>
-                  <th>Member</th>
-                  <th>Status</th>
-                  <th>Phone</th>
-                  <th>Join Date</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredMembers.map((member) => (
-                  <tr key={member.id}>
-                    <td>
-                      <div className="table-member-cell">
-                        <div className="table-member-avatar">
-                          {member.photo_url ? (
-                            <img src={member.photo_url} alt="" />
-                          ) : (
-                            getInitials(member.first_name, member.last_name)
-                          )}
-                        </div>
-                        <div>
-                          <div className="table-member-name">
-                            {getFullName(member.first_name, member.last_name)}
-                          </div>
-                          <div className="table-member-email">{member.email}</div>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <StatusBadge status={member.status} />
-                    </td>
-                    <td>{member.phone || '—'}</td>
-                    <td>{formatDate(member.join_date)}</td>
-                    <td>
-                      <div className="table-actions">
-                        <Link href={`/members/${member.id}`} className="btn btn-ghost btn-sm">
-                          View
-                        </Link>
-                        <Link href={`/members/${member.id}?edit=true`} className="btn btn-ghost btn-sm">
-                          Edit
-                        </Link>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-                {filteredMembers.length === 0 && (
-                  <tr>
-                    <td colSpan={5}>
-                      <div className="empty-state">
-                        <div className="empty-state-icon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}>
-                          <Users size={32} strokeWidth={1.5} />
-                        </div>
-                        <div className="empty-state-title">No members found</div>
-                        <div className="empty-state-text">
-                          {search ? 'Try a different search term' : 'Add your first member to get started'}
-                        </div>
-                        <Link href="/members/new" className="btn btn-primary btn-sm">+ Add Member</Link>
-                      </div>
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+        <div className="summary-box glass-panel">
+          <div className="summary-box__label">Inactive</div>
+          <div className="summary-box__value">{expiredCount}</div>
+          <span className="summary-box__change summary-box__change--down">
+            <TrendingDown size={12} /> -2%
+          </span>
+          <div className="donut-mini" />
         </div>
       </div>
-    </>
+
+      <div style={{ display: 'flex', gap: 8, overflowX: 'auto', marginBottom: 16, scrollbarWidth: 'none' }}>
+        {(['all', 'active', 'expired', 'paused', 'cancelled'] as const).map((s) => (
+          <button
+            key={s}
+            type="button"
+            className={`month-pill ${statusFilter === s ? 'month-pill--active' : ''}`}
+            onClick={() => setStatusFilter(s)}
+          >
+            {s === 'all' ? 'All' : s}
+          </button>
+        ))}
+      </div>
+
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+        <span className="mobile-section-title" style={{ margin: 0 }}>All Members</span>
+        <Link href="/members/new" style={{ fontSize: 13, color: 'var(--brand-primary-light)', textDecoration: 'none' }}>
+          + Add
+        </Link>
+      </div>
+
+      <div className="glass-list">
+        {filtered.map((member) => (
+          <Link key={member.id} href={`/members/${member.id}`} className="glass-list-item">
+            <div className="glass-list-item__icon">
+              {getInitials(member.first_name, member.last_name)}
+            </div>
+            <div className="glass-list-item__body">
+              <div className="glass-list-item__title">
+                {getFullName(member.first_name, member.last_name)}
+              </div>
+              <div className="glass-list-item__sub">
+                {member.status === 'active' ? 'Membership' : member.status} · {formatDate(member.join_date, 'MMM d')}
+              </div>
+            </div>
+            <div className="glass-list-item__amount glass-list-item__amount--negative">
+              <StatusBadge status={member.status} />
+            </div>
+          </Link>
+        ))}
+        {!filtered.length && (
+          <div className="glass-panel" style={{ padding: 24, textAlign: 'center', color: 'rgba(255,255,255,0.45)', fontSize: 13 }}>
+            No members found
+          </div>
+        )}
+      </div>
+    </div>
   );
 }

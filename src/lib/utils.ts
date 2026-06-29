@@ -14,6 +14,13 @@ export function formatCurrency(cents: number): string {
   }).format(cents / 100);
 }
 
+export function formatMoney(amount: number): string {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+  }).format(amount);
+}
+
 export function formatDate(date: string | Date | null, fmt: string = "MMM d, yyyy"): string {
   if (!date) return "—";
   return format(new Date(date), fmt);

@@ -2,13 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import Header from '@/components/Header';
+import MobileHeader from '@/components/mobile/MobileHeader';
 import StatusBadge from '@/components/StatusBadge';
-import { formatCurrency, formatDate, getFullName, getInitials } from '@/lib/utils';
-import Link from 'next/link';
+import { formatMoney, formatDate, getFullName, getInitials } from '@/lib/utils';
 import toast from 'react-hot-toast';
 import type { Payment, PaymentMethod, PaymentStatus, Member } from '@/lib/types';
-import { DollarSign, Clock, AlertTriangle, FileText } from 'lucide-react';
 
 const demoPayments: (Payment & { member?: Member })[] = [
   { id: '1', member_id: '1', amount: 49.99, status: 'paid', method: 'card', payment_date: '2025-06-01', created_at: '', member: { id: '1', first_name: 'Sarah', last_name: 'Johnson', email: 'sarah@email.com', phone: '', status: 'active', join_date: '', created_at: '', updated_at: '', archived: false } },
@@ -83,115 +81,62 @@ export default function PaymentsPage() {
   const failedCount = payments.filter(p => p.status === 'failed' || p.status === 'overdue').length;
 
   return (
-    <>
-      <Header title="Payments" subtitle="Payment management" />
-      <div className="page-content">
-        <div className="page-header">
-          <div className="page-header-left">
-            <h2 className="page-title">Payments & Billing</h2>
-            <p className="page-subtitle">{payments.length} transactions</p>
-          </div>
-          <div className="page-header-actions">
-            <button className="btn btn-primary" onClick={() => setShowModal(true)}>+ Log Payment</button>
-          </div>
-        </div>
+    <div className="mobile-page">
+      <MobileHeader title="Payments" showBack />
 
-        {/* Quick Stats */}
-        <div className="stats-grid" style={{ marginBottom: 'var(--space-8)' }}>
-          <div className="stat-card animate-in">
-            <div className="stat-card-header">
-              <span className="stat-card-label">Total Revenue</span>
-              <span className="stat-card-icon" style={{ color: 'var(--status-active)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <DollarSign size={18} strokeWidth={2} />
-              </span>
-            </div>
-            <div className="stat-card-value">{formatCurrency(totalRevenue)}</div>
-          </div>
-          <div className="stat-card animate-in">
-            <div className="stat-card-header">
-              <span className="stat-card-label">Pending/Overdue</span>
-              <span className="stat-card-icon" style={{ color: 'var(--brand-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Clock size={18} strokeWidth={2} />
-              </span>
-            </div>
-            <div className="stat-card-value">{formatCurrency(pendingAmount)}</div>
-          </div>
-          <div className="stat-card animate-in">
-            <div className="stat-card-header">
-              <span className="stat-card-label">Failed/Overdue</span>
-              <span className="stat-card-icon" style={{ color: 'var(--status-expired)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <AlertTriangle size={18} strokeWidth={2} />
-              </span>
-            </div>
-            <div className="stat-card-value" style={{ color: failedCount > 0 ? 'var(--status-expired)' : undefined }}>{failedCount}</div>
-          </div>
+      <div className="summary-split">
+        <div className="summary-box glass-panel">
+          <div className="summary-box__label">Revenue</div>
+          <div className="summary-box__value">{formatMoney(totalRevenue)}</div>
         </div>
+        <div className="summary-box glass-panel">
+          <div className="summary-box__label">Overdue</div>
+          <div className="summary-box__value">{failedCount}</div>
+          <span className="summary-box__change summary-box__change--down">{formatMoney(pendingAmount)} pending</span>
+        </div>
+      </div>
 
-        {/* Filters */}
-        <div className="filters-bar">
-          <select className="filter-select" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value as PaymentStatus | 'all')}>
-            <option value="all">All Status</option>
-            <option value="paid">Paid</option>
-            <option value="pending">Pending</option>
-            <option value="overdue">Overdue</option>
-            <option value="failed">Failed</option>
-            <option value="refunded">Refunded</option>
-          </select>
-        </div>
+      <div style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
+        {(['all', 'paid', 'pending', 'overdue', 'failed'] as const).map((s) => (
+          <button
+            key={s}
+            type="button"
+            className={`month-pill ${statusFilter === s ? 'month-pill--active' : ''}`}
+            onClick={() => setStatusFilter(s)}
+          >
+            {s}
+          </button>
+        ))}
+      </div>
 
-        {/* Payments Table */}
-        <div className="card">
-          <div className="data-table-wrapper">
-            <table className="data-table">
-              <thead>
-                <tr>
-                  <th>Member</th>
-                  <th>Amount</th>
-                  <th>Method</th>
-                  <th>Date</th>
-                  <th>Status</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredPayments.map((payment) => (
-                  <tr key={payment.id}>
-                    <td>
-                      {payment.member ? (
-                        <div className="table-member-cell">
-                          <div className="table-member-avatar">
-                            {getInitials(payment.member.first_name, payment.member.last_name)}
-                          </div>
-                          <div>
-                            <div className="table-member-name">
-                              {getFullName(payment.member.first_name, payment.member.last_name)}
-                            </div>
-                            <div className="table-member-email">{payment.member.email}</div>
-                          </div>
-                        </div>
-                      ) : (
-                        <span style={{ color: 'var(--text-muted)' }}>Unknown</span>
-                      )}
-                    </td>
-                    <td style={{ fontWeight: 700, color: 'var(--text-primary)' }}>
-                      {formatCurrency(payment.amount)}
-                    </td>
-                    <td style={{ textTransform: 'capitalize' }}>{payment.method.replace('_', ' ')}</td>
-                    <td>{formatDate(payment.payment_date)}</td>
-                    <td><StatusBadge status={payment.status} /></td>
-                    <td>
-                      <div className="table-actions">
-                        <button className="btn btn-ghost btn-sm" onClick={() => generateInvoice(payment)} style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                          <FileText size={14} /> Invoice
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
+        <span className="mobile-section-title" style={{ margin: 0 }}>Transactions</span>
+        <button type="button" className="month-pill month-pill--active" style={{ padding: '6px 14px', fontSize: 12 }} onClick={() => setShowModal(true)}>
+          + Log
+        </button>
+      </div>
+
+      <div className="glass-list">
+        {filteredPayments.map((payment) => (
+          <div key={payment.id} className="glass-list-item" style={{ cursor: 'default' }}>
+            <div className="glass-list-item__icon">
+              {payment.member ? getInitials(payment.member.first_name, payment.member.last_name) : '?'}
+            </div>
+            <div className="glass-list-item__body">
+              <div className="glass-list-item__title">
+                {payment.member ? getFullName(payment.member.first_name, payment.member.last_name) : 'Unknown'}
+              </div>
+              <div className="glass-list-item__sub">
+                {payment.method.replace('_', ' ')} · {formatDate(payment.payment_date)}
+              </div>
+            </div>
+            <div style={{ textAlign: 'right' }}>
+              <div className="glass-list-item__amount">{formatMoney(payment.amount)}</div>
+              <StatusBadge status={payment.status} />
+            </div>
           </div>
-        </div>
+        ))}
+      </div>
 
         {/* Log Payment Modal */}
         {showModal && (
@@ -247,15 +192,14 @@ export default function PaymentsPage() {
                 </div>
                 <div className="modal-footer">
                   <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>Cancel</button>
-                  <button type="submit" className="btn btn-primary" disabled={loading}>
-                    {loading ? <span className="spinner" /> : 'Log Payment'}
+                  <button type="submit" className="btn-glass-white" disabled={loading} style={{ width: 'auto', padding: '0 24px' }}>
+                    {loading ? 'Saving...' : 'Log Payment'}
                   </button>
                 </div>
               </form>
             </div>
           </div>
         )}
-      </div>
-    </>
+    </div>
   );
 }

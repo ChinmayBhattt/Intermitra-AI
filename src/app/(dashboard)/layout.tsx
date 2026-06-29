@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Sidebar from '@/components/Sidebar';
+import MobileShell from '@/components/mobile/MobileShell';
 import { createClient } from '@/lib/supabase/client';
 import { Toaster } from 'react-hot-toast';
 
@@ -10,45 +10,33 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [user, setUser] = useState<{ full_name: string; email: string; role: string } | undefined>();
+  const [mounted, setMounted] = useState(false);
   const supabase = createClient();
 
   useEffect(() => {
-    const getUser = async () => {
-      const { data: { user: authUser } } = await supabase.auth.getUser();
-      if (authUser) {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('full_name, role')
-          .eq('id', authUser.id)
-          .single();
-
-        setUser({
-          full_name: profile?.full_name || authUser.email?.split('@')[0] || 'User',
-          email: authUser.email || '',
-          role: profile?.role || 'staff',
-        });
-      }
-    };
-    getUser();
-  }, [supabase]);
+    setMounted(true);
+  }, []);
 
   return (
     <div className="app-layout">
-      <Sidebar user={user} />
-      <main className="main-content">
-        {children}
-      </main>
+      <MobileShell>
+        {mounted ? children : (
+          <div className="mobile-page" style={{ padding: '40px 0', textAlign: 'center', color: 'rgba(255,255,255,0.5)' }}>
+            Loading...
+          </div>
+        )}
+      </MobileShell>
       <Toaster
-        position="bottom-right"
+        position="top-center"
         toastOptions={{
           style: {
-            background: 'var(--bg-secondary)',
-            color: 'var(--text-primary)',
-            border: '1px solid var(--border-secondary)',
-            borderRadius: 'var(--radius-md)',
-            fontSize: 'var(--text-sm)',
+            background: 'rgba(15, 15, 30, 0.95)',
+            color: '#fff',
+            border: '1px solid rgba(255,255,255,0.1)',
+            borderRadius: '16px',
+            fontSize: '13px',
             fontFamily: 'var(--font-family)',
+            backdropFilter: 'blur(20px)',
           },
         }}
       />

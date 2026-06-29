@@ -1,9 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { createClient } from '@/lib/supabase/client';
-import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import { createClient } from '@/lib/supabase/client';
+import MobileShell from '@/components/mobile/MobileShell';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -22,151 +23,97 @@ export default function LoginPage() {
 
     try {
       if (isSignUp) {
-        const { error } = await supabase.auth.signUp({
+        const { error: signUpError } = await supabase.auth.signUp({
           email,
           password,
-          options: {
-            data: {
-              full_name: fullName,
-              role: 'admin',
-            },
-          },
+          options: { data: { full_name: fullName, role: 'admin' } },
         });
-        if (error) throw error;
-        // After signup, auto-login
-        const { error: loginError } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
+        if (signUpError) throw signUpError;
+        const { error: loginError } = await supabase.auth.signInWithPassword({ email, password });
         if (loginError) {
-          setError('Account created! Please check your email to verify, then log in.');
+          setError('Account created! Verify email, then sign in.');
           setIsSignUp(false);
-          setLoading(false);
           return;
         }
       } else {
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-        if (error) throw error;
+        const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
+        if (signInError) throw signInError;
       }
       router.push('/');
       router.refresh();
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'An error occurred';
-      setError(message);
+      setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="auth-container">
-      <div className="auth-card">
-        <div className="auth-logo">
-          <Image
-            src="/dmviron-logo.png"
-            alt="DMVIron"
-            width={72}
-            height={72}
-            style={{ borderRadius: '14px' }}
-          />
-          <span className="auth-logo-text">DMVIron</span>
-          <p className="auth-subtitle">
-            {isSignUp ? 'Create your staff account' : 'Sign in to manage your gym'}
+    <MobileShell showNav={false}>
+      <div className="auth-phone-wrap">
+        <div style={{ textAlign: 'center', marginBottom: 32 }}>
+          <Image src="/assets/logo.svg" alt="DMVIron" width={64} height={64} style={{ margin: '0 auto 16px', borderRadius: 16 }} />
+          <h1 style={{ fontSize: 24, fontWeight: 800, color: '#fff', letterSpacing: '-0.03em' }}>DMVIron</h1>
+          <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.45)', marginTop: 8 }}>
+            {isSignUp ? 'Create staff account' : 'Sign in to manage your gym'}
           </p>
         </div>
 
         {error && (
           <div style={{
-            background: 'var(--status-expired-bg)',
-            border: '1px solid rgba(239, 68, 68, 0.3)',
-            borderRadius: 'var(--radius-md)',
-            padding: 'var(--space-3) var(--space-4)',
-            marginBottom: 'var(--space-5)',
-            fontSize: 'var(--text-sm)',
-            color: 'var(--status-expired)',
+            background: 'rgba(239, 68, 68, 0.12)',
+            border: '1px solid rgba(239, 68, 68, 0.25)',
+            borderRadius: 16,
+            padding: '12px 16px',
+            marginBottom: 16,
+            fontSize: 13,
+            color: '#f87171',
           }}>
             {error}
           </div>
         )}
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
           {isSignUp && (
-            <div className="form-group">
-              <label className="form-label" htmlFor="fullName">Full Name</label>
-              <input
-                id="fullName"
-                type="text"
-                className="form-input"
-                placeholder="John Smith"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                required
-              />
-            </div>
+            <input
+              type="text"
+              className="input-glass"
+              placeholder="Full name"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              required
+            />
           )}
-
-          <div className="form-group">
-            <label className="form-label" htmlFor="email">Email Address</label>
-            <input
-              id="email"
-              type="email"
-              className="form-input"
-              placeholder="you@dmviron.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label className="form-label" htmlFor="password">Password</label>
-            <input
-              id="password"
-              type="password"
-              className="form-input"
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              minLength={6}
-            />
-          </div>
-
-          <button
-            type="submit"
-            className="btn btn-primary btn-lg"
-            style={{ width: '100%', marginTop: 'var(--space-2)' }}
-            disabled={loading}
-          >
-            {loading ? (
-              <span className="spinner" />
-            ) : (
-              isSignUp ? 'Create Account' : 'Sign In'
-            )}
+          <input
+            type="email"
+            className="input-glass"
+            placeholder="Email address"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+          <input
+            type="password"
+            className="input-glass"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            minLength={6}
+          />
+          <button type="submit" className="btn-glass-white" disabled={loading} style={{ marginTop: 8 }}>
+            {loading ? 'Please wait...' : isSignUp ? '+ Create Account' : 'Sign In'}
           </button>
         </form>
 
-        <div className="auth-footer">
+        <p style={{ textAlign: 'center', marginTop: 24, fontSize: 13, color: 'rgba(255,255,255,0.45)' }}>
           {isSignUp ? (
-            <>
-              Already have an account?{' '}
-              <a href="#" onClick={(e) => { e.preventDefault(); setIsSignUp(false); setError(''); }}>
-                Sign in
-              </a>
-            </>
+            <>Have an account? <button type="button" onClick={() => { setIsSignUp(false); setError(''); }} style={{ background: 'none', border: 'none', color: 'var(--brand-primary-light)', cursor: 'pointer', fontSize: 13 }}>Sign in</button></>
           ) : (
-            <>
-              Need an account?{' '}
-              <a href="#" onClick={(e) => { e.preventDefault(); setIsSignUp(true); setError(''); }}>
-                Create one
-              </a>
-            </>
+            <>New here? <button type="button" onClick={() => { setIsSignUp(true); setError(''); }} style={{ background: 'none', border: 'none', color: 'var(--brand-primary-light)', cursor: 'pointer', fontSize: 13 }}>Create account</button></>
           )}
-        </div>
+        </p>
       </div>
-    </div>
+    </MobileShell>
   );
 }
