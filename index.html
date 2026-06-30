@@ -3,25 +3,232 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="A beautiful, modern todo app with Google sign-in. Stay organized and productive." />
-    <title>Taskflow — Smart Todo App</title>
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-    <script>
-      // Prevent theme flash — set data-theme before first paint
-      (function() {
-        var t = localStorage.getItem('taskflow-theme');
-        if (t !== 'light' && t !== 'dark') {
-          t = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
-        }
-        document.documentElement.setAttribute('data-theme', t);
-      })();
-    </script>
+    <title>RIFT / ROW | Clothing Brand</title>
+    <meta
+      name="description"
+      content="RIFT / ROW is a modular clothing brand for city days, travel layers, and pieces that work harder than trends."
+    />
+    <link rel="preconnect" href="https://images.unsplash.com" />
+    <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
-    <div id="app"></div>
-    <script type="module" src="/src/main.js"></script>
+    <header class="site-header" data-header>
+      <a class="brand-mark" href="#top" aria-label="RIFT / ROW home">
+        <span>RIFT</span>
+        <span>/</span>
+        <span>ROW</span>
+      </a>
+      <nav class="nav-links" aria-label="Primary navigation">
+        <a href="#collection">Collection</a>
+        <a href="#field-notes">Field Notes</a>
+        <a href="#stockists">Stockists</a>
+      </nav>
+      <button class="bag-button" type="button" data-open-bag aria-label="Open bag">
+        <span class="bag-icon" aria-hidden="true"></span>
+        <span class="bag-count" data-bag-count>0</span>
+      </button>
+    </header>
+
+    <main id="top">
+      <section class="hero" aria-label="RIFT / ROW brand introduction">
+        <div class="hero-media" role="img" aria-label="Curated jackets and denim hanging on a clothing rack"></div>
+        <div class="hero-copy">
+          <p class="drop-label">Drop 01 / Weathered Utility</p>
+          <h1>RIFT / ROW</h1>
+          <p>
+            Modular layers, washed canvas, and easy tailoring for days that move from
+            morning commute to late table.
+          </p>
+          <div class="hero-actions">
+            <a class="button primary" href="#collection">Shop the drop</a>
+            <a class="button secondary" href="#field-notes">See the system</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="ticker" aria-label="Brand values">
+        <span>Garment-dyed cotton</span>
+        <span>Repairable trims</span>
+        <span>Layer-ready fits</span>
+        <span>Small batch releases</span>
+      </section>
+
+      <section class="section intro-grid" id="collection">
+        <div>
+          <p class="eyebrow">The collection</p>
+          <h2>Built around three pieces that carry the week.</h2>
+        </div>
+        <p>
+          Each garment starts with a relaxed block, tactile fabric, and pockets placed
+          where hands naturally land. Choose a mode to filter the drop.
+        </p>
+      </section>
+
+      <section class="shop-shell" aria-label="Shop RIFT / ROW collection">
+        <div class="filter-bar" role="group" aria-label="Filter products">
+          <button class="filter-button active" type="button" data-filter="all">All</button>
+          <button class="filter-button" type="button" data-filter="outerwear">Outerwear</button>
+          <button class="filter-button" type="button" data-filter="knitwear">Knitwear</button>
+          <button class="filter-button" type="button" data-filter="bottoms">Bottoms</button>
+        </div>
+
+        <div class="product-grid" data-product-grid>
+          <article class="product-card" data-category="outerwear">
+            <div class="product-image product-image-rack" role="img" aria-label="A sage jacket and denim layers on a clothing rack"></div>
+            <div class="product-body">
+              <div>
+                <p class="product-type">Outerwear</p>
+                <h3>Transit Chore Jacket</h3>
+              </div>
+              <p class="price">$168</p>
+            </div>
+            <p class="product-note">Garment-dyed cotton twill with a soft cord collar and internal phone pocket.</p>
+            <div class="swatches" aria-label="Available colors">
+              <span class="swatch sage" title="Sage"></span>
+              <span class="swatch ink" title="Ink"></span>
+              <span class="swatch clay" title="Clay"></span>
+            </div>
+            <button class="add-button" type="button" data-add-item="Transit Chore Jacket" data-price="168">
+              Add to bag
+            </button>
+          </article>
+
+          <article class="product-card" data-category="knitwear">
+            <div class="product-image product-image-knit" role="img" aria-label="Close fabric detail of a pale buttoned garment"></div>
+            <div class="product-body">
+              <div>
+                <p class="product-type">Knitwear</p>
+                <h3>Studio Rib Overshirt</h3>
+              </div>
+              <p class="price">$132</p>
+            </div>
+            <p class="product-note">Midweight rib with horn buttons, dropped shoulder, and enough structure to wear open.</p>
+            <div class="swatches" aria-label="Available colors">
+              <span class="swatch bone" title="Bone"></span>
+              <span class="swatch moss" title="Moss"></span>
+              <span class="swatch blue" title="Harbor Blue"></span>
+            </div>
+            <button class="add-button" type="button" data-add-item="Studio Rib Overshirt" data-price="132">
+              Add to bag
+            </button>
+          </article>
+
+          <article class="product-card" data-category="bottoms">
+            <div class="product-image product-image-denim" role="img" aria-label="Editorial denim look in a neutral studio"></div>
+            <div class="product-body">
+              <div>
+                <p class="product-type">Bottoms</p>
+                <h3>Arc Denim Trouser</h3>
+              </div>
+              <p class="price">$146</p>
+            </div>
+            <p class="product-note">Cropped straight leg, curved outseam, rinsed denim, and a waistband that sits clean.</p>
+            <div class="swatches" aria-label="Available colors">
+              <span class="swatch denim" title="Rinse"></span>
+              <span class="swatch black" title="Black"></span>
+              <span class="swatch oat" title="Oat"></span>
+            </div>
+            <button class="add-button" type="button" data-add-item="Arc Denim Trouser" data-price="146">
+              Add to bag
+            </button>
+          </article>
+        </div>
+      </section>
+
+      <section class="section system-panel" id="field-notes">
+        <div class="system-image" role="img" aria-label="Neutral textile and button detail"></div>
+        <div class="system-copy">
+          <p class="eyebrow">Field notes</p>
+          <h2>Designed as a compact wardrobe, not a one-off outfit.</h2>
+          <div class="note-list">
+            <div>
+              <span>01</span>
+              <p>Generous shoulders keep the silhouette relaxed without swallowing the frame.</p>
+            </div>
+            <div>
+              <span>02</span>
+              <p>Natural fibers are pre-washed so the first fit is already close to the long-term fit.</p>
+            </div>
+            <div>
+              <span>03</span>
+              <p>Buttons, rivets, and labels are repairable or removable for longer wear.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section lookbook" aria-label="Lookbook">
+        <div class="lookbook-copy">
+          <p class="eyebrow">Lookbook</p>
+          <h2>Three layers, six combinations, zero costume changes.</h2>
+        </div>
+        <div class="lookbook-grid">
+          <figure>
+            <img
+              src="https://images.unsplash.com/photo-1551232864-3f0890e580d9?auto=format&fit=crop&w=900&q=80"
+              alt="Clothing rack with jackets, denim, and neutral layers"
+            />
+            <figcaption>Rack edit / Sage, bone, rinse</figcaption>
+          </figure>
+          <figure>
+            <img
+              src="https://images.unsplash.com/photo-1516762689617-e1cffcef479d?auto=format&fit=crop&w=900&q=80"
+              alt="Minimal clothing store rack with neutral garments"
+            />
+            <figcaption>Store edit / Easy-repeat layers</figcaption>
+          </figure>
+          <figure>
+            <img
+              src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=900&q=80"
+              alt="Fashion editorial model in a structured jacket"
+            />
+            <figcaption>Street edit / Clean outerwear line</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section class="section stockists" id="stockists">
+        <div>
+          <p class="eyebrow">Stockists</p>
+          <h2>First delivery lands in three studio stores.</h2>
+        </div>
+        <div class="stockist-list">
+          <article>
+            <p>New York</p>
+            <h3>Canal Supply</h3>
+            <span>Drop opens Aug 14</span>
+          </article>
+          <article>
+            <p>London</p>
+            <h3>Form Room</h3>
+            <span>Private fitting week</span>
+          </article>
+          <article>
+            <p>Tokyo</p>
+            <h3>Kita Archive</h3>
+            <span>Limited denim run</span>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <aside class="bag-drawer" data-bag aria-label="Shopping bag" aria-hidden="true">
+      <div class="bag-panel">
+        <div class="bag-heading">
+          <h2>Bag</h2>
+          <button class="close-button" type="button" data-close-bag aria-label="Close bag"></button>
+        </div>
+        <div class="bag-items" data-bag-items>
+          <p class="empty-state">Your bag is empty.</p>
+        </div>
+        <div class="bag-total">
+          <span>Estimated total</span>
+          <strong data-bag-total>$0</strong>
+        </div>
+        <button class="checkout-button" type="button">Reserve pieces</button>
+      </div>
+    </aside>
+
+    <script src="./script.js"></script>
   </body>
 </html>
